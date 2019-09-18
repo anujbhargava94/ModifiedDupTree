@@ -58,23 +58,58 @@ public abstract class AbsTree {
 		case3R(t);
 	}
 
+	private AbsTree findPreviousNode(AbsTree findNode, AbsTree node) {
+		if (node.left == null && node.right == null) {
+			System.out.println("this is root node");
+			return null;
+		} else if ((node.left != null && node.left.value == findNode.value)
+				|| (node.right != null && node.right.value == findNode.value)) {
+			return node;
+		} else if (node.left == null || node.right == null) {
+			if (node.right != null && node.right.value > findNode.value) {
+				return findPreviousNode(findNode, node.right);
+			} else {
+				return findPreviousNode(findNode, node.left);
+			}
+		} else {
+			if (node.right.value < findNode.value) {
+				return findPreviousNode(findNode, node.right);
+			} else {
+				return findPreviousNode(findNode, node.left);
+			}
+		}
+	}
+
 	protected void case1(AbsTree t) { // remove the leaf
 		// to be filled by you
-		t = null;
+		AbsTree prevNode = findPreviousNode(t, this);
+		if (prevNode != null) {
+			if (prevNode.left.value == t.value) {
+				prevNode.left = null;
+			} else {
+				prevNode.right = null;
+			}
+		}
 	}
 
 	protected void case2(AbsTree t) { // remove internal node
 		// to be filled by you
-		t = t.left == null? t.right:t.left;
+		t = t.left == null ? t.right : t.left;
 	}
 
 	protected void case3L(AbsTree t) { // replace t.value and t.count
 		// to be filled by you
-		
+		t.value = t.left.value;
+		t = t.left;
+		// update count
+
 	}
 
 	protected void case3R(AbsTree t) { // replace t.value
 		// to be filled by you
+		t.value = t.right.value;
+		t = t.right;
+		// count
 	}
 
 	private AbsTree find(int n) {
