@@ -84,7 +84,18 @@ public abstract class AbsTree {
 		// to be filled by you
 		AbsTree prevNode = findPreviousNode(t, this);
 		if (prevNode != null) {
-			if (prevNode.left.value == t.value) {
+			if (prevNode.left != null && prevNode.left.value == t.value) {
+				prevNode.left = null;
+			} else {
+				prevNode.right = null;
+			}
+		}
+	}
+	
+	private void removeNode(AbsTree t, AbsTree root) {
+		AbsTree prevNode = findPreviousNode(t, root);
+		if (prevNode != null) {
+			if (prevNode.left != null && prevNode.left.value == t.value) {
 				prevNode.left = null;
 			} else {
 				prevNode.right = null;
@@ -94,22 +105,34 @@ public abstract class AbsTree {
 
 	protected void case2(AbsTree t) { // remove internal node
 		// to be filled by you
-		t = t.left == null ? t.right : t.left;
+		AbsTree prevNode = findPreviousNode(t, this);
+		if (t.right != null) {
+			prevNode.right = t.right;
+		} else {
+			prevNode.left = t.left;
+		}
+		t.right = null;
+		t.left = null;
 	}
 
 	protected void case3L(AbsTree t) { // replace t.value and t.count
 		// to be filled by you
-		t.value = t.left.value;
-		t = t.left;
-		// update count
-
+		AbsTree maxNode = t.left.max();
+		AbsTree copyMaxNode = maxNode;
+		removeNode(maxNode, this);
+		t.value = copyMaxNode.value;
+		int count = copyMaxNode.get_count();
+		t.set_count(count);
 	}
 
 	protected void case3R(AbsTree t) { // replace t.value
 		// to be filled by you
-		t.value = t.right.value;
-		t = t.right;
-		// count
+		AbsTree minNode = t.right.min();
+		AbsTree copyMinNode = minNode;
+		removeNode(minNode, this);
+		t.value = copyMinNode.value;
+		int count = copyMinNode.get_count();
+		t.set_count(count);
 	}
 
 	private AbsTree find(int n) {
