@@ -1,14 +1,12 @@
 package com.ub.ModifiedTree;
 
 public class Tree extends AbsTree {
-	protected int nodeCount;
+	//protected int nodeCount;
 	public Tree(int n) {
 		super(n);
-		nodeCount =0;
 	}
 
 	protected AbsTree add_node(int n) {
-		//nodeCount++;
 		return new Tree(n);
 	}
 
@@ -23,6 +21,5 @@ public class Tree extends AbsTree {
 
 	protected void set_count(int v) {
 		// to be filled by you
-		//nodeCount = v;
 	}
 }

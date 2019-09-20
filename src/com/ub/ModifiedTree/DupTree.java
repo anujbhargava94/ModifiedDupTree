@@ -25,5 +25,4 @@ public class DupTree extends AbsTree {
 	}
 
 	protected int count;
-	protected int nodeCount;
 }

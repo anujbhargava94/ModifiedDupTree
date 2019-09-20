@@ -13,10 +13,12 @@ public abstract class AbsTree {
 		else if (value < n)
 			if (right == null) {
 				right = add_node(n);
+				right.parent = this;
 			} else
 				right.insert(n);
 		else if (left == null) {
 			left = add_node(n);
+			left.parent = this;
 		} else
 			left.insert(n);
 	}
@@ -35,8 +37,8 @@ public abstract class AbsTree {
 			return;
 		}
 
-		if (t.left == null && t.right == null) { // n is a leaf value
-			if (t != this)
+		if (t.left == null && t.right == null) { 											// n is a leaf value
+			if (t != this || t.parent != null)     											//added 2nd condition in case it is recursive call and delete is called on internal node
 				case1(t);
 			else
 				System.out.println("Unable to delete " + n + " -- tree will become empty!");
@@ -58,81 +60,54 @@ public abstract class AbsTree {
 		case3R(t);
 	}
 
-	private AbsTree findPreviousNode(AbsTree findNode, AbsTree node) {
-		if (node.left == null && node.right == null) {
-			System.out.println("this is root node");
-			return null;
-		} else if ((node.left != null && node.left.value == findNode.value)
-				|| (node.right != null && node.right.value == findNode.value)) {
-			return node;
-		} else if (node.left == null || node.right == null) {
-			if (node.right != null && node.right.value > findNode.value) {
-				return findPreviousNode(findNode, node.right);
-			} else {
-				return findPreviousNode(findNode, node.left);
-			}
-		} else {
-			if (node.right.value < findNode.value) {
-				return findPreviousNode(findNode, node.right);
-			} else {
-				return findPreviousNode(findNode, node.left);
-			}
-		}
-	}
 
 	protected void case1(AbsTree t) { // remove the leaf
 		// to be filled by you
-		AbsTree prevNode = findPreviousNode(t, this);
-		if (prevNode != null) {
-			if (prevNode.left != null && prevNode.left.value == t.value) {
-				prevNode.left = null;
+		AbsTree parentNode = t.parent;// findParentNode(t, this);
+		if (parentNode != null) {
+			if (parentNode.left != null && parentNode.left.value == t.value) {   	//Check the orientation of the node to be deleted
+				parentNode.left = null;
 			} else {
-				prevNode.right = null;
+				parentNode.right = null;
 			}
 		}
-	}
-	
-	private void removeNode(AbsTree t, AbsTree root) {
-		AbsTree prevNode = findPreviousNode(t, root);
-		if (prevNode != null) {
-			if (prevNode.left != null && prevNode.left.value == t.value) {
-				prevNode.left = null;
-			} else {
-				prevNode.right = null;
-			}
-		}
+		t.parent = null;															//complete deattach the node from tree
 	}
 
 	protected void case2(AbsTree t) { // remove internal node
 		// to be filled by you
-		AbsTree prevNode = findPreviousNode(t, this);
-		if (t.right != null) {
-			prevNode.right = t.right;
-		} else {
-			prevNode.left = t.left;
+		AbsTree parentNode = t.parent;// findParentNode(t, this);
+		if (parentNode.right!=null && parentNode.right.value == t.value) {
+			parentNode.right = (t.right != null)?t.right:t.left;					//check if the node to be deleted has non null right or left and 
+			parentNode.right.parent = parentNode;									//assign to the left/right of the tree based on the original node orientation
+		}else {
+			parentNode.left = (t.right != null)?t.right:t.left;
+			parentNode.left.parent = parentNode;
 		}
+		// detach current node
 		t.right = null;
 		t.left = null;
+		t.parent = null;
 	}
 
 	protected void case3L(AbsTree t) { // replace t.value and t.count
 		// to be filled by you
 		AbsTree maxNode = t.left.max();
-		AbsTree copyMaxNode = maxNode;
-		removeNode(maxNode, this);
-		t.value = copyMaxNode.value;
-		int count = copyMaxNode.get_count();
+		t.value = maxNode.value;
+		int count = maxNode.get_count();
 		t.set_count(count);
+		maxNode.set_count(0);														//setting the count as 0 for recursive node deletion 
+		t.left.delete(maxNode.value);												//in case of duptree (else if count>1 node will not be deleted)
 	}
 
 	protected void case3R(AbsTree t) { // replace t.value
 		// to be filled by you
 		AbsTree minNode = t.right.min();
-		AbsTree copyMinNode = minNode;
-		removeNode(minNode, this);
-		t.value = copyMinNode.value;
-		int count = copyMinNode.get_count();
+		t.value = minNode.value;
+		int count = minNode.get_count();
 		t.set_count(count);
+		minNode.set_count(0);
+		t.right.delete(minNode.value);
 	}
 
 	private AbsTree find(int n) {
