@@ -19,7 +19,6 @@ class DupTree_Test {
 		tr.insert(150);
 		tr.insert(75);
 		tr.insert(90);
-		tr.insert(95);
 
 		
 		tr.delete(20);
